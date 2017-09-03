@@ -1,0 +1,59 @@
+#!/bin/bash
+
+xhost local:root
+
+show_help() {
+  echo "Usage:
+
+  ${0##*/} [-h][-s DIRNAME][-t DIRNAME]
+
+Options:
+
+  -h, --help
+    display this help and exit
+
+  -s, --source=DIRNAME
+    Source directory
+
+  -t, --target
+    Target directory
+  "
+}
+
+while [[ $# -gt 1 ]]
+do
+key="$1"
+
+case $key in
+    -s|--source)
+    SOURCE="$2"
+    shift
+    ;;
+    -t|--target)
+    TARGET="$2"
+    shift
+    ;;
+    -h|--help|*)
+        show_help
+    shift
+    ;;
+esac
+shift # past argument or value
+done
+
+if [ -z $SOURCE ] || [ -z $TARGET ]; then
+    show_help
+    exit 1
+fi
+
+mkdir -p $HOME/.local/share/rapid-photo-downloader
+
+docker run -ti --rm \
+	-v /etc/localtime:/etc/localtime:ro \
+	-v /tmp/.X11-unix:/tmp/.X11-unix \
+	-e DISPLAY=$DISPLAY \
+	-v $HOME/.local/share/rapid-photo-downloader:/home/rapid/.local/share \
+	-v $(realpath $SOURCE):/home/rapid/source \
+	-v $(realpath $TARGET):/home/rapid/target \
+	--name photo-downloader \
+	juanolon/photo-downloader -l /home/rapid/source -v

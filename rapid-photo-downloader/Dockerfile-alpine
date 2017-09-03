@@ -1,0 +1,43 @@
+FROM python:3.6.1-alpine
+
+MAINTAINER Juan Pablo Stumpf <juanolon@gmail.com>
+
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
+    apk update && apk upgrade
+
+# http://damonlynch.net/rapid/download.html
+RUN apk --update --no-cache add \
+    # py-qt \
+    py3-qt5 \
+    py-distutils-extra \
+    libgudev-dev \
+    udisks2 \
+    glib-dev \
+    gexiv2 \
+    py-gst0.10 \
+    libnotify \
+    ca-certificates \
+    openssl \
+    py-gobject3
+
+ENV USERNAME rapid
+RUN adduser -D -u 1000 $USERNAME && \
+    echo $USERNAME:$USERNAME | chpasswd && \
+    echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    update-ca-certificates
+
+USER $USERNAME
+WORKDIR /home/$USERNAME
+
+ENV RAPID_BIN=rapid-photo-downloader-0.9.0a11.tar.gz
+
+RUN python3 -m pip install --user --upgrade pip && \
+    python3 -m pip install --user --upgrade setuptools
+
+RUN wget -O $RAPID_BIN "https://launchpad.net/rapid/pyqt/0.9.0a11/+download/rapid-photo-downloader-0.9.0a11.tar.gz" && \
+    wget -O install.py "https://launchpad.net/rapid/pyqt/0.9.0a11/+download/install.py"
+
+RUN python3 install.py rapid-photo-downloader-0.9.0a11.tar.gz
+
+CMD ["/bin/sh"]

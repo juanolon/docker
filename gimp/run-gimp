@@ -1,0 +1,11 @@
+#!/bin/bash
+
+xhost local:root
+
+docker run -ti --rm \
+	-v /etc/localtime:/etc/localtime:ro \
+	-v /tmp/.X11-unix:/tmp/.X11-unix \
+	-e DISPLAY=$DISPLAY \
+	-v $HOME/Pictures:/root/Pictures \
+	--name gimp \
+	jess/gimp
