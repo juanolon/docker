@@ -1,0 +1,6 @@
+#!/bin/bash
+
+docker run -i --rm -a stdin -a stdout -a stderr \
+	-v $(pwd):/home/docs/docs \
+	--name pandoc \
+	juanolon/pandoc $@
