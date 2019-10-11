@@ -1,0 +1,8 @@
+#!/bin/bash
+
+docker run -ti --rm \
+	-v /tmp/.X11-unix:/tmp/.X11-unix \
+	-v $HOME/Documents/yed:/home/yed/Documents \
+	-e DISPLAY=$DISPLAY \
+	--name yed \
+	juanolon/yed $@
